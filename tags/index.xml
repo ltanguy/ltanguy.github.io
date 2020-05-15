@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Pure theme for Hugo</title>
+    <link>https://ltanguy.github.io/tags/</link>
+    <description>Recent content in Tags on Pure theme for Hugo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Thu, 14 May 2020 11:15:03 +0200</lastBuildDate>
+    
+        <atom:link href="https://ltanguy.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>https://ltanguy.github.io/about/</link>
+      <pubDate>Thu, 14 May 2020 15:57:32 +0200</pubDate>
+      
+      <guid>https://ltanguy.github.io/about/</guid>
+      <description>Chief architect somewhere. I speak mostly about software engineering, security, cloud infrastructure and sometimes tech culture. Oh and I still love to code 🙀</description>
+    </item>
+    
+    <item>
+      <title>Authorization with TLS Mutual Authentication</title>
+      <link>https://ltanguy.github.io/2020/05/tls-ma-authorization/</link>
+      <pubDate>Thu, 14 May 2020 11:15:03 +0200</pubDate>
+      
+      <guid>https://ltanguy.github.io/2020/05/tls-ma-authorization/</guid>
+      <description>TLS Mutual Authentication (TLS MA or more commonly nowadays mTLS) is increasingly being leveraged for securing links between applications (see the section of Istio&amp;rsquo;s documentation on security as an example).
+It provides a much more robust and secure solution than static shared credentials:
+ Shared credentials are susceptible to brute-force attacks. mTLS is not. Shared credentials should be periodically rotated. In practice, this is almost never the case as the process is particularly painful and implies the rotation of the credentials at the server and client level simultaneously.</description>
+    </item>
+    
+  </channel>
+</rss>

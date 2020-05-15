@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+        Authorization with TLS Mutual Authentication - Pure theme for Hugo
+      </title>
+        <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    
+    <meta name="theme-color" content="#000000" />
+    
+    <meta http-equiv="window-target" content="_top" />
+    
+    
+    <meta name="description" content="Some thoughts on mTLS authentication and its implication for authorization." />
+    <meta name="generator" content="Hugo 0.70.0 with theme pure" />
+    <title>Authorization with TLS Mutual Authentication - Pure theme for Hugo</title>
+    
+    
+    <link rel="stylesheet" href="https://ltanguy.github.io/css/style.min.c4bc7071f132c964c2116bca53b392933f377e5ca7b7051ed245187c621a2d3e.css">
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.15.10/styles/github.min.css" async>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css" async>
+    <meta property="og:title" content="Authorization with TLS Mutual Authentication" />
+<meta property="og:description" content="Some thoughts on mTLS authentication and its implication for authorization." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ltanguy.github.io/2020/05/tls-ma-authorization/" />
+<meta property="article:published_time" content="2020-05-14T11:15:03+02:00" />
+<meta property="article:modified_time" content="2020-05-14T11:15:03+02:00" />
+<meta itemprop="name" content="Authorization with TLS Mutual Authentication">
+<meta itemprop="description" content="Some thoughts on mTLS authentication and its implication for authorization.">
+<meta itemprop="datePublished" content="2020-05-14T11:15:03&#43;02:00" />
+<meta itemprop="dateModified" content="2020-05-14T11:15:03&#43;02:00" />
+<meta itemprop="wordCount" content="1376">
+
+
+
+<meta itemprop="keywords" content="mTLS,security,authorization,authentication," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Authorization with TLS Mutual Authentication"/>
+<meta name="twitter:description" content="Some thoughts on mTLS authentication and its implication for authorization."/>
+
+    <!--[if lte IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+      <![endif]-->
+
+    <!--[if lt IE 9]>
+        <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+      <![endif]-->
+  </head>
+
+  
+  
+
+  <body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage"><header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="slimContent">
+      <div class="navbar-header">
+        <div class="profile-block text-center">
+          <a id="avatar" href="https://twitter.com/LoeizT" target="_blank">
+            <img class="img-circle img-rotate" src="https://ltanguy.github.io/avatar.jpg" width="200" height="200">
+          </a>
+          <h2 id="name" class="hidden-xs hidden-sm">Loeiz TANGUY</h2>
+          <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+          <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i>Paris, France</small>
+        </div><div class="search" id="search-form-wrap">
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i
+                        class="icon icon-search"></i></button>
+            </span>
+        </div>
+        <div class="ins-search">
+            <div class="ins-search-mask"></div>
+            <div class="ins-search-container">
+                <div class="ins-input-wrapper">
+                    <input type="text" class="ins-search-input" placeholder="Type something..."
+                        x-webkit-speech />
+                    <button type="button" class="close ins-close ins-selectable" data-dismiss="modal"
+                        aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="ins-section-wrapper">
+                    <div class="ins-section-container"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+        <ul class="nav navbar-nav main-nav">
+            <li class="menu-item menu-item-home">
+                <a href="/">
+                    <i class="icon icon-home-fill"></i>
+                  <span class="menu-title">Home</span>
+                </a>
+            </li>
+            <li class="menu-item menu-item-archives">
+                <a href="/posts/">
+                    <i class="icon icon-archives-fill"></i>
+                  <span class="menu-title">Posts</span>
+                </a>
+            </li>
+            <li class="menu-item menu-item-categories">
+                <a href="/categories/">
+                    <i class="icon icon-folder"></i>
+                  <span class="menu-title">Categories</span>
+                </a>
+            </li>
+            <li class="menu-item menu-item-tags">
+                <a href="/tags/">
+                    <i class="icon icon-tags"></i>
+                  <span class="menu-title">Tags</span>
+                </a>
+            </li>
+            <li class="menu-item menu-item-about">
+                <a href="/about/">
+                    <i class="icon icon-cup-fill"></i>
+                  <span class="menu-title">About</span>
+                </a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+<aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title"> Categories</h3>
+    <div class="widget-body">
+        <ul class="category-list">
+        </ul>
+    </div>
+</div>
+      <div class="widget">
+    <h3 class="widget-title"> Tags</h3>
+    <div class="widget-body">
+        <ul class="tag-list">
+            
+            
+            <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/authentication/" class="tag-list-link">authentication</a><span
+                    class="tag-list-count">1</span></li>
+            
+            
+            <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/authorization/" class="tag-list-link">authorization</a><span
+                    class="tag-list-count">1</span></li>
+            
+            
+            <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/mtls/" class="tag-list-link">mtls</a><span
+                    class="tag-list-count">1</span></li>
+            
+            
+            <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/security/" class="tag-list-link">security</a><span
+                    class="tag-list-count">1</span></li>
+            
+        </ul>
+
+    </div>
+</div>
+      
+<div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+        <ul class="recent-post-list list-unstyled no-thumbnail">
+            <li>
+                <div class="item-inner">
+                    <p class="item-title">
+                        <a href="https://ltanguy.github.io/2020/05/tls-ma-authorization/" class="title">Authorization with TLS Mutual Authentication</a>
+                    </p>
+                    <p class="item-date">
+                        <time datetime="2020-05-14 11:15:03 &#43;0200 CEST" itemprop="datePublished">2020-05-14</time>
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+  </div>
+</aside>
+
+    
+    
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <h4 class="toc-title">Catalogue</h4>
+    <nav id="toc" class="js-toc toc">
+
+    </nav>
+  </div>
+</aside>
+<main class="main" role="main"><div class="content">
+  <article id="-" class="article article-type-" itemscope
+    itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      <h1 itemprop="name">
+  <a
+    class="article-title"
+    href="/2020/05/tls-ma-authorization/"
+    >Authorization with TLS Mutual Authentication</a
+  >
+</h1>
+
+      <div class="article-meta">
+        
+<span class="article-date">
+  <i class="icon icon-calendar-check"></i>&nbsp;
+<a href="https://ltanguy.github.io/2020/05/tls-ma-authorization/" class="article-date">
+  <time datetime="2020-05-14 11:15:03 &#43;0200 CEST" itemprop="datePublished">2020-05-14</time>
+</a>
+</span>
+  
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>&nbsp;
+    <a class="article-tag-link" href="/tags/mtls/"> mTLS </a>
+    <a class="article-tag-link" href="/tags/security/"> security </a>
+    <a class="article-tag-link" href="/tags/authorization/"> authorization </a>
+    <a class="article-tag-link" href="/tags/authentication/"> authentication </a>
+  </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i>&nbsp;<a href="/2020/05/tls-ma-authorization/#comments"
+            class="article-comment-link">Comments</a></span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 7minutes </span>
+      </div>
+    </div>
+    <div class="article-entry marked-body js-toc-content" itemprop="articleBody">
+      <p>TLS Mutual Authentication (TLS MA or more commonly nowadays mTLS) is increasingly being leveraged for securing links between applications (see <a href="https://istio.io/docs/concepts/security/#mutual-tls-authentication">the section of Istio&rsquo;s documentation on security</a> as an example).</p>
+<p>It provides a much more robust and secure solution than static shared credentials:</p>
+<ul>
+<li>Shared credentials are susceptible to brute-force attacks. mTLS is not.</li>
+<li>Shared credentials should be periodically rotated. In practice, this is almost never the case as the process is particularly painful and implies the rotation of the credentials at the server and client level simultaneously. In constrast, mTLS allows the client or the server to rotate their public/private key pair independently.</li>
+<li>When done correctly, accessing the client private key implies a shell access to the client servers and are harder to steal.</li>
+</ul>
+<p>That said, mTLS is admittedly harder to setup and has some pre-requisites: having deployed a Certificate Authority (CA), having a good operation tooling for the deployment and maintenance of those secrets and more importantly having devs and ops understand how the pieces fits together.</p>
+<p>I was involved recently in a design discussion on how to secure an edge gateway facing multiple third-parties, relying on mTLS to authenticate connections from remote services. I was painfully reminded how hard it is, even for seasoned technical or security specialists, to reason about mTLS and what it means in terms of authorization for applications. For most people, mTLS is a very different beast than all other authentication methods. Spoiler: it&rsquo;s not (that much).</p>
+<h2 id="some-important-properties-of-certificates-in-a-public-key-infrastructure">Some important properties of certificates in a Public Key Infrastructure</h2>
+<p>X.509 Certificates are basically a bunch of metadatas, notably:</p>
+<ul>
+<li>The public RSA/DSA/EC public key associated with the private key the service holds</li>
+<li>A period of validity (<em>NotBefore</em> and <em>NotAfter</em>)</li>
+<li>The identity and a signature of the CA that issued the certificate</li>
+<li>Informations on how to use this certificate (Constraints)</li>
+<li>A <em>Subject</em> attribute</li>
+</ul>
+<p>This Subject attribute has the form of a X.500 Distinguished Name (for example: <em>CN=HR System,OU=HR,O=ACME</em>).
+The only guarantee CA provides is that all certificates with a given Subject attribute are emitted to the same person or application.</p>
+<p>Quoting <a href="https://tools.ietf.org/html/rfc5280#section-4.1.2.6">RFC 5280 on X.509 certificates</a>:</p>
+<blockquote>
+<p>Where it is non-empty, the subject field MUST contain an X.500
+distinguished name (DN).  The DN MUST be unique for each subject
+entity certified by the one CA as defined by the issuer field.  A CA
+MAY issue more than one certificate with the same DN to the same
+subject entity.</p>
+</blockquote>
+<p>This happens usually when:</p>
+<ul>
+<li>A renewal of the certificate happened. Usually the previous certificate is expired or revoked.</li>
+<li>The application that represents this Subject is deployed in HA. Each service has its own private key and certificate.</li>
+</ul>
+<p>All other attributes in the certificate (notably <em>subjectAltName</em>) have usually no unicity guarantees.</p>
+<p>Also, the DN of the certificate is arbitrary. It can be as simple as <em>CN=HR System</em> or as complex as <em>CN=HR System,OU=Global HR,O=ACME,C=FR</em>. All certificate authorities have different policies for naming.</p>
+<p>It&rsquo;s important to be aware that in no way the CA guarantees that the CN attribute in the DN is unique. Two certificates emitted by the CA to two different parties can share the same CN, for example <em>CN=HR System,OU=Global HR,O=ACME,C=FR</em> and <em>CN=HR System,OU=Other HR Service,O=ACME,C=FR</em>.</p>
+<h2 id="mtls-basics">mTLS Basics</h2>
+<p>I won&rsquo;t dive into the details of mTLS, just outline some important properties of certificates in the context of authentication and authorization with mTLS. For a refresh on mTLS, see <a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">this article</a> for example.</p>
+<p>mTLS implies two things:</p>
+<ul>
+<li>the server exposes a non-expired server certificate, signed by a CA that the client trusts, that references the FQDN of the server in the <em>subjectAltName</em> attribute (<a href="https://tools.ietf.org/html/rfc2818#section-3.1">not the CN of the certificate</a>)</li>
+<li>the client has a non-expired client certificate, signed by a CA the server trusts for authentication.</li>
+</ul>
+<h2 id="mtls-with-a-single-trusted-ca">mTLS with a single trusted CA</h2>
+<p>Let&rsquo;s imagine a scenario where a service exposes two sets of API A and B. API A can be accessed by client 1 and API B can only be accessed by client 2. You absolutely do not want client 1 to access API B and inversely. Both clients use certificates emitted by the same Certificate Authority.</p>
+<figure class="text-center">
+    <img src="/tls-ma-autorization/single_ca.svg" width="500px"/> 
+</figure>
+
+<p>This is the easy road. In this scenario, the Subject DN of the client certificate is the identity the service can rely on for authorization on its API.</p>
+<p>It&rsquo;s important though to rely on the <strong>whole DN</strong> and not only the CN as it may not be unique, as seen previously. It particularly holds true if the client uses a certificate emitted by a public CA.</p>
+<h2 id="mtls-with-multiple-trusted-ca">mTLS with multiple trusted CA</h2>
+<p>This is there where things usually go wrong.</p>
+<p>Let&rsquo;s take the previous scenario, but now each client uses a client certificate emitted by two different certificate authorities. This is a frequent setup if you expose your services to partners through an edge gateway.</p>
+<figure class="text-center">
+    <img src="/tls-ma-autorization/multiple_ca.svg" width="500px"/> 
+</figure>
+
+<p>Depending on the technology used for implementing the service, you either:</p>
+<ul>
+<li>trust globally all the CAs on all your services. This is the case for Java, where the trust is global at the JVM level.</li>
+<li>create something similar to <em>Virtual Hosts</em> in Apache or Nginx, where you trust only one CA and do authorization in this compartment.</li>
+</ul>
+<h4 id="global-trust">Global trust</h4>
+<p>In the first case, if you rely solely on the DN of the Subject to authenticate the clients, it is possible for an attacker to generate a certificate on the second CA with the same DN and access your service. This is bad.</p>
+<p>This is not uncommon. Let&rsquo;s look at the <a href="https://docs.confluent.io/current/kafka/authorization.html">documentation of authorizations in Apache Kafka</a>:</p>
+<blockquote>
+<p>By default, the name of the principal identified by a TLS/SSL certificate is the DN (X.500 Distinguished    Name) of that certificate (also known as the Subject), which uses the form CN=writeuser,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown. You can use ssl.principal.mapping.rules to translate the DN to a more manageable principal name.</p>
+</blockquote>
+<p>If your Kafka cluster is trusting more than one CA, you&rsquo;re potentially vulnerable. In this context, the usage of mapping rules to extract an identifier from the DN adds another layer of danger.</p>
+<p>In general, you can be tempted to check the format of the DN or trusting too much the issuance process of the CA.
+For example: thinking that the issuance process of the CA ensures that you&rsquo;re necessarily authorized by ACME corporation to request certificates with a subject containing <em>O=ACME</em>.</p>
+<p>Chances are that it is not the case.</p>
+<h4 id="virtual-hosts">Virtual Hosts</h4>
+<p>In the second case, you&rsquo;re at first sight back to the single CA scenario, but this strategy will be probably hard to maintain as you add other CAs.</p>
+<p>This strategy will also have impacts on how you expose your services to partners, as the server needs to determine on which Virtual Host in needs to route the incoming request:</p>
+<ul>
+<li>Use a different FQDN for each Virtual Host (if all your clients supports Server Name Indication / SNI).</li>
+<li>Use a different port for each Virtual Host</li>
+<li>Use a different IP for each Virtual Host (and as a consequence a different FQDN)</li>
+</ul>
+<p>This also couples a lot of your applicative security to the infrastructure configuration, which is never a good idea.</p>
+<h2 id="a-simple-universal-solution">A simple universal solution</h2>
+<p>People familiar with Radius or Kerberos will probably remember fondly the notion of <em>realms</em>.</p>
+<p>mTLS can (and must) be considered similarly:</p>
+<ul>
+<li>Trusting a CA on your service basically means trusting the realm that is managed by this CA. This realm is defined by the Subject DN of this CA, which will appear in each certificate emitted by it. It may still be a good idea to ensure that you&rsquo;re not trusting two CAs with the same Subject (though it&rsquo;s unlikely).</li>
+<li><strong>The client identity is determined by the combination of the Subject DN and the Issuer DN of its certificate</strong>, for example <em>CN=HR System,OU=HR,O=ACME,C=FR@O=ACME,C=FR</em>. This identifier is guaranteed to be unique across all certificates emitted by the CAs you trust.</li>
+</ul>
+<p>This approach is simple, works independently of the number of CAs you trust in your application and makes no hypothesis on the format of Subject DN or Issuer DN.</p>
+<p>If the application in the examples is an edge gateway and fine-grained authorization is done in backend-services, it must propagates those two attributes.</p>
+<p>The inherent complexity of mTLS makes us easily forget the basic properties of authentication and authorizations: the user must prove its identity, its identifier must be unique in the system and authorization must be based on this unique identifier.</p>
+
+    </div>
+    <div class="article-footer">
+    </div>
+  </article>
+<section id="comments">
+</section>
+
+</div><nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        <ul class="pager pull-left">
+            <li class="next">
+                <a href="https://ltanguy.github.io/about/"
+                    title="About"><span>Newer&nbsp;&nbsp;</span><i
+                        class="icon icon-angle-right" aria-hidden="true"></i></a>
+            </li>
+            
+            <li class="toggle-toc">
+                <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false"
+                    title="Catalogue" role="button">
+                    <span>[&nbsp;</span><span>Catalogue</span>
+                    <i class="text-collapsed icon icon-anchor"></i>
+                    <i class="text-in icon icon-close"></i>
+                    <span>]</span>
+                </a>
+            </li>
+        </ul>
+        <div class="bar-right">
+            <div class="share-component" data-sites="facebook,twitter,linkedin"
+                data-mobile-sites="facebook,twitter,linkedin"></div>
+        </div>
+    </div>
+</nav>
+
+</main><footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+<ul class="social-links">
+    <li><a href="https://github.com/ltanguy" target="_blank" title="github" data-toggle=tooltip data-placement=top >
+            <i class="icon icon-github"></i></a></li>
+    <li><a href="https://www.linkedin.com/in/loeiz-tanguy/" target="_blank" title="linkedin" data-toggle=tooltip data-placement=top >
+            <i class="icon icon-linkedin"></i></a></li>
+    <li><a href="https://ltanguy.github.io/index.xml" target="_blank" title="rss" data-toggle=tooltip data-placement=top >
+            <i class="icon icon-rss"></i></a></li>
+    <li><a href="https://twitter.com/LoeizT" target="_blank" title="twitter" data-toggle=tooltip data-placement=top >
+            <i class="icon icon-twitter"></i></a></li>
+</ul>
+  <div class="copyright">
+    &copy;2017  -
+    2020
+    <div class="publishby">
+        Theme by <a href="https://github.com/xiaoheiAh" target="_blank"> xiaoheiAh </a>base on<a href="https://github.com/xiaoheiAh/hugo-theme-pure" target="_blank"> pure</a>.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_SVG"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            showMathMenu: false, //disables context menu
+            tex2jax: {
+            inlineMath: [ ['$','$'], ['\\(','\\)'] ]
+           }
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script type="text/javascript" src="https://cdn.staticfile.org/highlight.js/9.15.10/highlight.min.js"></script>
+<script type="text/javascript" src="https://cdn.staticfile.org/highlight.js/9.15.10/languages/python.min.js" defer></script>
+<script type="text/javascript" src="https://cdn.staticfile.org/highlight.js/9.15.10/languages/javascript.min.js" defer></script><script>
+    hljs.configure({
+        tabReplace: '    ', 
+        classPrefix: ''     
+        
+    })
+    hljs.initHighlightingOnLoad();
+</script>
+<script src="https://ltanguy.github.io/js/application.min.bdeb64b910570b6c41badc6a05b7afb0c8ad9efd8525de3c7257d59e786326a3.js"></script>
+<script src="https://ltanguy.github.io/js/plugin.min.51ff8c7317566f82259170fa36e09c4493adc9b9378b427a01ad3f017ebac7dd.js"></script>
+
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            ROOT_URL: 'https:\/\/ltanguy.github.io',
+            CONTENT_URL: 'https:\/\/ltanguy.github.io\/searchindex.json ',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script type="text/javascript" src="https://ltanguy.github.io/js/insight.min.a343cd9a5a7698336b28ef3a7c16a3a1b1d2d5fb17dc8ed04022bbe08cc5459073a15bdafa3a8a58cdd56080784bdd69fa70b1ae8597565c799c57ed00f0e120.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<script>
+    tocbot.init({
+        
+        tocSelector: '.js-toc',
+        
+        contentSelector: '.js-toc-content',
+        
+        headingSelector: 'h1, h2, h3',
+        
+        hasInnerContainers: true,
+    });
+</script>
+
+
+  </body>
+</html>
