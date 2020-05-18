@@ -39,11 +39,11 @@
 <meta itemprop="description" content="Some thoughts on mTLS authentication and its implication for authorization.">
 <meta itemprop="datePublished" content="2020-05-14T11:15:03&#43;02:00" />
 <meta itemprop="dateModified" content="2020-05-14T11:15:03&#43;02:00" />
-<meta itemprop="wordCount" content="1376">
+<meta itemprop="wordCount" content="1454">
 
 
 
-<meta itemprop="keywords" content="mTLS,security,authorization,authentication," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="mTLS,authorization,authentication," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Authorization with TLS Mutual Authentication"/>
 <meta name="twitter:description" content="Some thoughts on mTLS authentication and its implication for authorization."/>
 
@@ -146,6 +146,7 @@
     <h3 class="widget-title"> Categories</h3>
     <div class="widget-body">
         <ul class="category-list">
+            <li class="category-list-item"><a href="https://ltanguy.github.io/categories/security/" class="category-list-link">security</a><span class="category-list-count">1</span></li>
         </ul>
     </div>
 </div>
@@ -164,10 +165,6 @@
             
             
             <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/mtls/" class="tag-list-link">mtls</a><span
-                    class="tag-list-count">1</span></li>
-            
-            
-            <li class="tag-list-item"><a href="https://ltanguy.github.io/tags/security/" class="tag-list-link">security</a><span
                     class="tag-list-count">1</span></li>
             
         </ul>
@@ -226,11 +223,13 @@
   <time datetime="2020-05-14 11:15:03 &#43;0200 CEST" itemprop="datePublished">2020-05-14</time>
 </a>
 </span>
-  
+<span class="article-category">
+  <i class="icon icon-folder"></i>&nbsp;
+  <a class="article-category-link" href="/categories/security/"> security </a>
+</span>  
   <span class="article-tag">
     <i class="icon icon-tags"></i>&nbsp;
     <a class="article-tag-link" href="/tags/mtls/"> mTLS </a>
-    <a class="article-tag-link" href="/tags/security/"> security </a>
     <a class="article-tag-link" href="/tags/authorization/"> authorization </a>
     <a class="article-tag-link" href="/tags/authentication/"> authentication </a>
   </span>
@@ -244,9 +243,9 @@
       <p>TLS Mutual Authentication (TLS MA or more commonly nowadays mTLS) is increasingly being leveraged for securing links between applications (see <a href="https://istio.io/docs/concepts/security/#mutual-tls-authentication">the section of Istio&rsquo;s documentation on security</a> as an example).</p>
 <p>It provides a much more robust and secure solution than static shared credentials:</p>
 <ul>
-<li>Shared credentials are susceptible to brute-force attacks. mTLS is not.</li>
+<li>Shared credentials are susceptible to brute-force attacks.</li>
 <li>Shared credentials should be periodically rotated. In practice, this is almost never the case as the process is particularly painful and implies the rotation of the credentials at the server and client level simultaneously. In constrast, mTLS allows the client or the server to rotate their public/private key pair independently.</li>
-<li>When done correctly, accessing the client private key implies a shell access to the client servers and are harder to steal.</li>
+<li>When done correctly, the client private key never leaves the client infrastructure and is thus harder to steal.</li>
 </ul>
 <p>That said, mTLS is admittedly harder to setup and has some pre-requisites: having deployed a Certificate Authority (CA), having a good operation tooling for the deployment and maintenance of those secrets and more importantly having devs and ops understand how the pieces fits together.</p>
 <p>I was involved recently in a design discussion on how to secure an edge gateway facing multiple third-parties, relying on mTLS to authenticate connections from remote services. I was painfully reminded how hard it is, even for seasoned technical or security specialists, to reason about mTLS and what it means in terms of authorization for applications. For most people, mTLS is a very different beast than all other authentication methods. Spoiler: it&rsquo;s not (that much).</p>
@@ -275,23 +274,24 @@ subject entity.</p>
 <li>The application that represents this Subject is deployed in HA. Each service has its own private key and certificate.</li>
 </ul>
 <p>All other attributes in the certificate (notably <em>subjectAltName</em>) have usually no unicity guarantees.</p>
-<p>Also, the DN of the certificate is arbitrary. It can be as simple as <em>CN=HR System</em> or as complex as <em>CN=HR System,OU=Global HR,O=ACME,C=FR</em>. All certificate authorities have different policies for naming.</p>
+<p>Also, the DN of the Subject attribute is arbitrary. It can be as simple as <em>CN=HR System</em> or as complex as <em>CN=HR System,OU=Global HR,O=ACME,C=FR</em>. All certificate authorities have different policies for naming.</p>
 <p>It&rsquo;s important to be aware that in no way the CA guarantees that the CN attribute in the DN is unique. Two certificates emitted by the CA to two different parties can share the same CN, for example <em>CN=HR System,OU=Global HR,O=ACME,C=FR</em> and <em>CN=HR System,OU=Other HR Service,O=ACME,C=FR</em>.</p>
 <h2 id="mtls-basics">mTLS Basics</h2>
-<p>I won&rsquo;t dive into the details of mTLS, just outline some important properties of certificates in the context of authentication and authorization with mTLS. For a refresh on mTLS, see <a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">this article</a> for example.</p>
-<p>mTLS implies two things:</p>
+<p>I won&rsquo;t dive here into the details of mTLS. For a refresh on mTLS, see <a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">this article</a> for example.</p>
+<p>In summary, mTLS implies two things:</p>
 <ul>
 <li>the server exposes a non-expired server certificate, signed by a CA that the client trusts, that references the FQDN of the server in the <em>subjectAltName</em> attribute (<a href="https://tools.ietf.org/html/rfc2818#section-3.1">not the CN of the certificate</a>)</li>
 <li>the client has a non-expired client certificate, signed by a CA the server trusts for authentication.</li>
 </ul>
+<p>That&rsquo;s basically it. It should be noted here that most of the configuration is done at the level of the middleware hosting the code (an Application Server or Web Server). The code is generally unaware of how the TLS configuration is done.</p>
 <h2 id="mtls-with-a-single-trusted-ca">mTLS with a single trusted CA</h2>
-<p>Let&rsquo;s imagine a scenario where a service exposes two sets of API A and B. API A can be accessed by client 1 and API B can only be accessed by client 2. You absolutely do not want client 1 to access API B and inversely. Both clients use certificates emitted by the same Certificate Authority.</p>
+<p>Let&rsquo;s imagine a scenario where a service exposes two APIs, A and B. API A can be accessed by client 1 and API B can only be accessed by client 2. We absolutely do not want client 1 to access API B and inversely. Both clients use certificates emitted by the same Certificate Authority.</p>
 <figure class="text-center">
     <img src="/tls-ma-autorization/single_ca.svg" width="500px"/> 
 </figure>
 
 <p>This is the easy road. In this scenario, the Subject DN of the client certificate is the identity the service can rely on for authorization on its API.</p>
-<p>It&rsquo;s important though to rely on the <strong>whole DN</strong> and not only the CN as it may not be unique, as seen previously. It particularly holds true if the client uses a certificate emitted by a public CA.</p>
+<p>It&rsquo;s important though to rely on the <strong>whole DN</strong> and not only the CN as it may not be unique at the whole CA level, as seen previously. It particularly holds true if the client uses a certificate emitted by a public CA.</p>
 <h2 id="mtls-with-multiple-trusted-ca">mTLS with multiple trusted CA</h2>
 <p>This is there where things usually go wrong.</p>
 <p>Let&rsquo;s take the previous scenario, but now each client uses a client certificate emitted by two different certificate authorities. This is a frequent setup if you expose your services to partners through an edge gateway.</p>
@@ -316,7 +316,7 @@ For example: thinking that the issuance process of the CA ensures that you&rsquo
 <p>Chances are that it is not the case.</p>
 <h4 id="virtual-hosts">Virtual Hosts</h4>
 <p>In the second case, you&rsquo;re at first sight back to the single CA scenario, but this strategy will be probably hard to maintain as you add other CAs.</p>
-<p>This strategy will also have impacts on how you expose your services to partners, as the server needs to determine on which Virtual Host in needs to route the incoming request:</p>
+<p>This strategy will also have impacts on how you expose your services to partners, as the server needs to determine on which Virtual Host it needs to route the incoming request:</p>
 <ul>
 <li>Use a different FQDN for each Virtual Host (if all your clients supports Server Name Indication / SNI).</li>
 <li>Use a different port for each Virtual Host</li>
@@ -327,12 +327,13 @@ For example: thinking that the issuance process of the CA ensures that you&rsquo
 <p>People familiar with Radius or Kerberos will probably remember fondly the notion of <em>realms</em>.</p>
 <p>mTLS can (and must) be considered similarly:</p>
 <ul>
-<li>Trusting a CA on your service basically means trusting the realm that is managed by this CA. This realm is defined by the Subject DN of this CA, which will appear in each certificate emitted by it. It may still be a good idea to ensure that you&rsquo;re not trusting two CAs with the same Subject (though it&rsquo;s unlikely).</li>
+<li>Trusting a CA on your service basically means trusting the realm that is managed by this CA. This realm is defined by the Subject DN of this CA, which will appear in each certificate emitted by it (Issuer attribute). It may still be a good idea to ensure that you&rsquo;re not trusting two CAs with the same Subject (though it&rsquo;s unlikely).</li>
 <li><strong>The client identity is determined by the combination of the Subject DN and the Issuer DN of its certificate</strong>, for example <em>CN=HR System,OU=HR,O=ACME,C=FR@O=ACME,C=FR</em>. This identifier is guaranteed to be unique across all certificates emitted by the CAs you trust.</li>
 </ul>
-<p>This approach is simple, works independently of the number of CAs you trust in your application and makes no hypothesis on the format of Subject DN or Issuer DN.</p>
-<p>If the application in the examples is an edge gateway and fine-grained authorization is done in backend-services, it must propagates those two attributes.</p>
-<p>The inherent complexity of mTLS makes us easily forget the basic properties of authentication and authorization: the user must prove its identity, its identifier must be unique in the system and authorization must be based on this unique identifier.</p>
+<p>This approach is simple, works independently of the number of CAs you trust in your application and makes no hypothesis on the format of the Subject DN or Issuer DN. It still allows for independent renewal of the client certificate. By following this principle, trusting globally all CAs also have a low security impact and allows us to simplify the configuration of the middleware.</p>
+<p>If the application in the examples is an edge gateway and fine-grained authorization is done in backend-services, it&rsquo;s equally important to propagate those two attributes.</p>
+<p>The inherent complexity of mTLS makes us easily forget the basic properties of authentication and authorization: the user must prove its identity, its identifier must be unique at the system level and authorization must be based on this unique identifier.</p>
+<p>Hope this post is helpful. Comments ? Hit me on <a href="https://twitter.com/LoeizT">Twitter</a>.</p>
 
     </div>
     <div class="article-footer">
