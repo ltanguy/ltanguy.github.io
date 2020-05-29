@@ -11,6 +11,18 @@
     
     
     <item>
+      <title>Projects</title>
+      <link>https://ltanguy.github.io/projects/</link>
+      <pubDate>Wed, 27 May 2020 12:02:28 +0200</pubDate>
+      
+      <guid>https://ltanguy.github.io/projects/</guid>
+      <description>Ident.io SAML A developer-friendly SAML 2.0 API written in Java.
+Github Project
+Ident.io Server A cloud-native authentication and federation server
+Github Project Documentation</description>
+    </item>
+    
+    <item>
       <title>Oracle Cloud Impressions</title>
       <link>https://ltanguy.github.io/2020/05/oracle-cloud-impressions/</link>
       <pubDate>Wed, 27 May 2020 10:56:02 +0200</pubDate>

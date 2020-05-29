@@ -268,11 +268,11 @@
 <p>The geographic presence of Oracle Cloud is less dense than AWS, as it was foreseeable given how Oracle was late on the market. At the time of this writing, Oracle has 17 regions, but only 4 have 3 <em>Availability Domains</em> (equivalent of <em>Availability Zones</em> in AWS jargon), 2 in Europe, 2 in the US. This numbers should be compared with the 24 regions of AWS, almost all with 3 <em>Availability Zones</em>.
 This may not be perfect for every countries on earth, but at least in should allow US and european customers of Oracle to have a nominal/backup topology without leaving their home continent.</p>
 <h2 id="iam">IAM</h2>
-<p>IAM and user management is usually the first step when building a cloud infrastructure.
+<p>IAM and user management is usually the first step when building a cloud infrastructure. 
 Oracle follows a slightly different approach than AWS by introducing a notion of <strong>compartment</strong>, which has the same objectives as <strong>Organizational Units</strong> and <strong>Accounts</strong> in an typical enterprise AWS setup with <em>AWS Organizations</em>.</p>
 <p>Compartments are a logical object where you attach the objects you create in Oracle Cloud: Users, Groups and all compute/storage/whatever resources, but also IAM policies. Compartments can also have sub-compartments which inherit policies from their parents.</p>
 <p>Once your account is created you end up with your first compartment, the root compartment and an admin account and group. You can then create child compartments for each perimeter of your organization.</p>
-<p>I must say that this feels a lot <strong>simpler</strong> and more integrated than the tree of accounts and OU in <em>AWS Organizations</em>. Admittedly, this is probably due to the fact that the first IAM releases in AWS were not designed to segregate resources between different user populations. AWS chose afterwards not to break the backward compatibility by adding a layer on top of this notion of accounts.
+<p>I must say that this feels a lot <strong>simpler</strong> and more integrated than the tree of accounts and OU in <em>AWS Organizations</em>. Admittedly, this is probably due to the fact that the first IAM releases in AWS were not designed to segregate resources between different user populations. AWS chose afterwards not to break the backward compatibility by adding a layer on top of this notion of accounts. 
 One clear benefit of the Oracle approach is that cross-account policies feel a lot more natural to write and you don&rsquo;t end up with a dozen of administrative accounts to secure - that should not be used in day-to-day operations btw.</p>
 <p>One interesting difference lies also in the way policies are defined: Oracle leveraged a simili-natural language approach for defining policies, which make them a lot more readable than their AWS counterpart.</p>
 <p>As an example:
@@ -361,7 +361,7 @@ Despite those languages being able to connect to an Oracle database, the drivers
 <p>For existing customers of Oracle products (especially the RDBMS and products from the middleware offering), it can make a lot of sense to host them on Oracle Cloud in an hybrid cloud approach. The offering is clearly not ridiculous compared to AWS on the basic services that you can expect from a public cloud provider and those companies can level up the automation level on these apps (which are often hard to maintain on premises).</p>
 <p>It can also appeal to companies which follow a strict &ldquo;cloud-agnostic&rdquo; or &ldquo;multi-cloud&rdquo; approach to public cloud (despite being in my opinion a not so good idea in practice&hellip; but that&rsquo;s a topic for another day), where only basic compute and storage services are leveraged.</p>
 <p>If you&rsquo;re a small structure and want the provider to manage almost everything while having few constraints on your technology stack, Oracle will probably not be your first choice, unless you largely underestimate the effort and costs needed to operate your own infrastructure :-)</p>
-<p>Finally, I must say that I was pleasantly surprised by Oracle Cloud. I had low expectations but they did deliver almost all the basics and the offering seems solid (with a few gotchas, especially on the database space). Keep in mind though that I only scratched the surface and that the little features of each services that are not marketed can make the difference between an easy setup and a nightmare.
+<p>Finally, I must say that I was pleasantly surprised by Oracle Cloud. I had low expectations but they did deliver almost all the basics and the offering seems solid (with a few gotchas, especially on the database space). Keep in mind though that I only scratched the surface and that the little features of each services that are not marketed can make the difference between an easy setup and a nightmare. 
 It takes time and a lot of customer usage to get there.</p>
 
     </div>
@@ -378,6 +378,11 @@ It takes time and a lot of customer usage to get there.</p>
                 <a href="https://ltanguy.github.io/about/" title="About"><i
                         class="icon icon-angle-left"
                         aria-hidden="true"></i><span>&nbsp;&nbsp;Older</span></a>
+            </li>
+            <li class="next">
+                <a href="https://ltanguy.github.io/projects/"
+                    title="Projects"><span>Newer&nbsp;&nbsp;</span><i
+                        class="icon icon-angle-right" aria-hidden="true"></i></a>
             </li>
             
             <li class="toggle-toc">
