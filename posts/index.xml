@@ -5,10 +5,20 @@
     <link>https://ltanguy.github.io/posts/</link>
     <description>Recent content in Posts on Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 14 May 2020 11:15:03 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2020 10:56:02 +0200</lastBuildDate>
     
         <atom:link href="https://ltanguy.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Oracle Cloud Impressions</title>
+      <link>https://ltanguy.github.io/2020/05/oracle-cloud-impressions/</link>
+      <pubDate>Wed, 27 May 2020 10:56:02 +0200</pubDate>
+      
+      <guid>https://ltanguy.github.io/2020/05/oracle-cloud-impressions/</guid>
+      <description>After hearing the news that Zoom was moving part of its infrastructure to Oracle Cloud and reading a few articles on that matter, I was curious to see with my own eyes what Oracle&amp;rsquo;s offer looked like.
+Please note that I&amp;rsquo;m familiar with (but not affiliated to) AWS, much less with Azure or GCP, so this article is in no way exhaustive nor a comprehensive benchmark of the cloud market. I may be a little biased, but I&amp;rsquo;ll try to keep it to a minimum.</description>
+    </item>
     
     <item>
       <title>About</title>
