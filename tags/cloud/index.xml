@@ -11,6 +11,17 @@
     
     
     <item>
+      <title>Talk &amp; Articles Log</title>
+      <link>https://ltanguy.github.io/talk-log/</link>
+      <pubDate>Wed, 03 Jun 2020 10:41:43 +0200</pubDate>
+      
+      <guid>https://ltanguy.github.io/talk-log/</guid>
+      <description>DevOps - Practices  Sandeep Pokkunuri • Ensuring Rollback Safety During Deployments (Amazon Builders&amp;rsquo; Library)  Engineering culture  Pat Kua • Secrets of a Strong Engineering Culture (QCon 2020)  Software Engineering - Monoliths and Micro-services   Sam Newman • Monolith Decomposition Patterns (QCon 2020)
+  Matt Heath • Building a Bank with Go (QCon 2017)
+  Jason Maude • Building a Reliable Cloud-Based Bank in Java (QCon 2017)</description>
+    </item>
+    
+    <item>
       <title>Projects</title>
       <link>https://ltanguy.github.io/dev/</link>
       <pubDate>Wed, 27 May 2020 12:02:28 +0200</pubDate>
